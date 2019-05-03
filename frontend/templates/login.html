@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Gym App</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
+    <style>
+        body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
+        .w3-bar,h1,button {font-family: "Montserrat", sans-serif}
+        .fa-anchor,.fa-coffee {font-size:200px}
+        </style>
+    <body>
+        <div class="w3-top">
+            <div class="w3-bar w3-black w3-card w3-left-align w3-large">
+                <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+                <a href="/register" class="w3-bar-item w3-button w3-padding-large w3-white">Sing Up</a>
+            </div>
+        </div>
+            {% include '/includes/_messages.html' %}
+        <div class="container">
+            <header class="w3-container w3-center" style="padding:50px 16px">
+                <h1 class="w3-jumbo">Ingresa sesión</h1>
+                <form method="POST" action="">
+                    <div class="w3-row-padding">
+                        <div>    
+                            <img src="static/images/login.jpg" alt="" width="100" height="100">
+                        </div>
+                            <label for="inputEmail" class="sr-only">Email address</label>
+                            <input type="email" id="inputEmail" name="correo" class="form-control" placeholder="Email address" required autofocus value={{request.form.coreo}}>
+                        <div>
+                            <label for="inputPassword" class="sr-only">Password</label>
+                            <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" required>
+                        </div>
+                        <div>
+                            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                        </div>
+                        <div>
+                            <p class="mt-5 mb-3 text-muted">&copy; 2019</p>
+                        </div>
+                    </div>
+                </form>
+            </header>
+        </div>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    </body>
+    {% include 'includes/_footer.html' %}
+</html>
+
+
+

@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <div class="w3-row-padding w3-padding-64 w3-container">
+        <h1>Tus clases:</h1> 
+        {% for clase in clases %}
+            <li class="list-group-item">
+                {{clase.nombre_clase}}
+                <ul>Instructor: {{clase.instructor}}</ul>
+                <ul>Horario: {{clase.horario}}</ul>
+            </li>
+        {% endfor %}
+    </div>
+{% endblock %}
