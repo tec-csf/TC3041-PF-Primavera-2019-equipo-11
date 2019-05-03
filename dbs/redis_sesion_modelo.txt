@@ -1,0 +1,4 @@
+{
+    'correo':'string',
+    'password':'string'
+}
