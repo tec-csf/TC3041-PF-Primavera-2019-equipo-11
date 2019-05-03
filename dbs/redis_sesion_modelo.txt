@@ -1,4 +1,3 @@
 {
-    'correo':'string',
-    'password':'string'
+    'correo':'password'
 }
