@@ -1,5 +1,5 @@
 import redis
-import config
+from api import config
 
 class Sessions(object):
 
@@ -15,25 +15,35 @@ class Sessions(object):
                 port=config.REDIS_PORT)
 
 
-    def Login(self,user):
-        """ Valida usuario y password """
+    def getUserPassword(self,user):
+        """ Obtener un Password dado un correo """
 
-        size = self.instance.get(user)
+        password = self.instance.get(user)
 
-        return size
+        if password is None: #Not found
+            return False 
+        else: 
+            return password
 
-    def Signup(self,user,password):
+    def signUp(self,user,password):
         """ Registra usuario y password """
 
         if self.instance.get(user) is None:
-            size = self.instance.set(user,password)
-            return "1"
-        else:
-            return "0"
+            signup = self.instance.set(user,password)
+            return True 
+        else: #Duplicado
+            return False
 
     def add(self, id):
         """ Crea una nueva sesion en Redis """
 
         result = self.instance.set(id, 1)
+
+        return result
+
+    def deleteOne(self, email):
+        ''' Borrar al eliminar un usuario'''
+
+        result = self.instance.delete(email)
 
         return result
