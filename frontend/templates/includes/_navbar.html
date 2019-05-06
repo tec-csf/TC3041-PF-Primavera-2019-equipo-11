@@ -2,15 +2,24 @@
 <div class="w3-top">
     <div class="w3-bar w3-black w3-card w3-left-align w3-large">
         <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
-        <a href="/home" class="w3-bar-item w3-button w3-padding-large w3-white">Home</a>
-        <a href="/perfil" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Perfil</a>
-        <a href="/dieta" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Dieta</a>
-        <a href="/clases" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Clases</a>
-        {% if session.logged_in %}
-        <a href="/logout" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white w3-right">Log Out</a>
+            <a href="/logout" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white w3-right">Log Out</a>
+        {% if session.admin %}
+            <a href="/home" class="w3-bar-item w3-button w3-padding-large w3-white">Home</a>
+            <a href="/register_users" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Registrar Usuarios</a>
+            <a href="/register_instructors" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Registrar Instructores</a>
+            <a href="/delete_users" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Borrar Usuario</a>
+
+        {% elif session.instructor %}
+            <a href="/home" class="w3-bar-item w3-button w3-padding-large w3-white">Home</a>
+            <a href="/crear_dieta" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Crear Dieta</a>
+            <a href="/crear_clase" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Crear Clase</a>
         {% else %}
-        <a href="/register" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white w3-right">Log Out</a>
+            <a href="/home" class="w3-bar-item w3-button w3-padding-large w3-white">Home</a>
+            <a href="/perfil" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Perfil</a>
+            <a href="/dieta" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Dieta</a>
+            <a href="/clases" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Clases</a>
         {% endif %}
+
     </div>
 
     <!-- Navbar on small screens -->

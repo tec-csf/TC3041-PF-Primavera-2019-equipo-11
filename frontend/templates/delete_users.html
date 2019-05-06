@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  
+</head>
+<body>
+    {% include 'includes/_navbar.html' %}
+    {% include '/includes/_messages.html' %}
+    <div class="w3-row-padding w3-padding-64 w3-container"> 
+      <div class="container">
+        <h2>Usuarios:</h2>
+        <p>Busca un usuario, escribe el correo en el campo que se especifíca y posteriormente da click en el botón 'Eliminar' para borrar el usuario de la base de datos:</p>  
+        <input class="form-control" id="myInput" type="text" placeholder="Search..">
+        <br>
+        <table class="table table-bordered ">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Dirección</th>
+            </tr>
+          </thead>
+          <tbody id="myTable">
+            {% for usuario in correos_usuarios %}
+              <tr>
+                  <td>{{nombres_usuarios[loop.index0]}}</td>
+                  <td>{{correos_usuarios[loop.index0]}}</td>
+                  <td>{{direcciones_usuarios[loop.index0]}}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% from 'includes/_formhelpers.html' import render_field %}
+        <form method="POST" action="">
+          <div class="form-group">
+              {{render_field(form.correo, class_="form-control")}}
+          </div>
+          <p><input type="submit" class="btn btn-primary" value="Eliminar"></p>
+        </form>
+        <!--<button type="submit" class="btn btn-primary" id="button" onclick="deleteSelectedRow()">Eliminar</button>-->
+        
+      </div>
+    </div>
+  </body>
+<script>
+  var email = "Not selected"
+  $(document).ready(function(){
+    $("#myInput").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#myTable tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+
+    $('#myTable tr').on('click', function(){
+      email = $(this).children().first().next().html();
+      $('#myTable tr').removeClass('highlight'); // "Unselect" all the rows
+      $(this).addClass("highlight")
+      //document.getElementById("demo").innerHTML = email;
+    });
+  });
+  function deleteSelectedRow() {
+    if (email != "Not selected")
+    {
+      if (confirm("¿Estás seguro que deseas eliminar al usuario asociado al correo: " + email + "?")) {
+        alert("Se eliminó el usuario");
+      } else {
+        alert("No se eliminó el usuario");
+      }
+    }
+    else
+    {
+      alert("No has seleccionado un usuario.");
+    }
+  };
+</script>
+<style>
+  .highlight { background-color: red }
+</style>
+</html>

@@ -1,8 +1,44 @@
 {% extends 'layout.html' %}
-
+<title>Perfil</title>
 {% block body %}
+
     <div class="w3-row-padding w3-padding-64 w3-container">
-        <h1>Tu perfil:</h1>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis eaque optio, ratione aliquam sequi molestias obcaecati minus fuga, recusandae perferendis officia hic reprehenderit illo laudantium ipsam, veniam dicta possimus unde.</p>
+        <h1>Tu Perfil:</h1>
+            <div>
+                <table style="width:100%">
+                    <tr>
+                        <td>ID</td>
+                        <td>{{id}}</td>
+                    </tr>
+                    <tr>
+                        <td>Nombre:</td>
+                        <td>{{name}}</td>
+                    </tr>
+                    <tr>
+                        <td>Correo</td>
+                        <td>{{correo}}</td>
+                    </tr>
+                    <tr>
+                        <td>Direccion</td>
+                        <td>{{address}}</td>
+                    </tr>
+                    <tr>
+                        <td>Tarjeta de pago</td>
+                        <td>{{cuenta}}</td>
+                    </tr>
+            </table>
+        </div>
     </div>
+    
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 15px;
+            font-size:20px
+        }
+    </style>
+
 {% endblock %}

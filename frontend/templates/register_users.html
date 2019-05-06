@@ -3,7 +3,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Sing Up</title>
+        <title>Registrar Usuario</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
@@ -21,16 +21,33 @@
         <div class="w3-top">
             <div class="w3-bar w3-black w3-card w3-left-align w3-large">
                 <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
-                <a href="/login" class="w3-bar-item w3-button w3-padding-large w3-white">Sing In</a>
+                <a href="/home" class="w3-bar-item w3-button w3-padding-large w3-white">Home</a>
             </div>
+            {% include '/includes/_messages.html' %}
         </div>
+        
         <div class="container">
                 <div class="w3-row-padding w3-padding-64 w3-container">
-                        <h1>Regístrate:</h1> 
+                        <h1>Registrar Usuario:</h1> 
                         {% from 'includes/_formhelpers.html' import render_field %}
                         <form method="POST" action="">
                             <div class="form-group">
                                 {{render_field(form.nombre, class_="form-control")}}
+                            </div>
+                            <div class="form-group">
+                                    {{render_field(form.direccion, class_="form-control")}}
+                            </div>
+                            <div class="form-group">
+                                    {{render_field(form.titular_tarjeta, class_="form-control")}}
+                            </div>
+                            <div class="form-group">
+                                    {{render_field(form.no_tarjeta, class_="form-control")}}
+                            </div>
+                            <div class="form-group">
+                                    {{render_field(form.csv_tarjeta, class_="form-control")}}
+                            </div>
+                            <div class="form-group">
+                                    {{render_field(form.vencimiento_tarjeta, class_="form-control")}}
                             </div>
                             <div class="form-group">
                                 {{render_field(form.correo, class_="form-control")}}
@@ -41,7 +58,7 @@
                             <div class="form-group">
                                 {{render_field(form.confirmar_contrasenia, class_="form-control")}}
                             </div>
-                                <p><input type="submit" class="btn btn-primary" value="Registrarme"></p>
+                                <p><input type="submit" class="btn btn-primary" value="Registrar"></p>
                         </form>
                     </div>
         </div>

@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Gym App</title>
+        <title>Mamba Fit LogIn</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
@@ -18,27 +18,30 @@
         <div class="w3-top">
             <div class="w3-bar w3-black w3-card w3-left-align w3-large">
                 <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
-                <a href="/register" class="w3-bar-item w3-button w3-padding-large w3-white">Sing Up</a>
             </div>
-        </div>
             {% include '/includes/_messages.html' %}
-        <div class="container">
-            <header class="w3-container w3-center" style="padding:50px 16px">
-                <h1 class="w3-jumbo">Ingresa sesión</h1>
+        </div>
+            
+        <div class="w3-container">
+            <header class="w3-container w3-center " style="padding:50px 16px">
+                <h1 class="w3-jumbo">Inicia Sesión</h1>
                 <form method="POST" action="">
                     <div class="w3-row-padding">
                         <div>    
-                            <img src="static/images/login.jpg" alt="" width="100" height="100">
+                            <img src="static/images/login.png" alt="" width="100" height="130">
                         </div>
+                            <h3>Mamba Fit</h3>
                             <label for="inputEmail" class="sr-only">Email address</label>
                             <input type="email" id="inputEmail" name="correo" class="form-control" placeholder="Email address" required autofocus value={{request.form.coreo}}>
                         <div>
                             <label for="inputPassword" class="sr-only">Password</label>
                             <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" required>
                         </div>
+                        <h3> </h3>
                         <div>
                             <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
                         </div>
+                        <h3>--------</h3>
                         <div>
                             <p class="mt-5 mb-3 text-muted">&copy; 2019</p>
                         </div>
