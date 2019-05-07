@@ -96,7 +96,7 @@ class GymAPI(object):
         return clase
 
     #Insertar una nueva clase
-    def create_class(self, nombre_clase, id_clase, instructores, horarios):
+    def create_class(self, nombre_clase, id_clase, instructores, horarios, ubicacion):
         mongodb = Gimnasio.Gimnasio()
         class_data = {
             'Nombre' : nombre_clase,
@@ -108,7 +108,8 @@ class GymAPI(object):
             'Horarios':
                 [
                     horarios
-                ]
+                ],
+            'Ubicacion': ubicacion
         }
         result = mongodb.createClass(class_data)
         return result

@@ -31,7 +31,7 @@ def home():
 #Login page 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    print(api.get_all_instructors())
+    #print(api.get_all_instructors())
     if request.method == 'POST':
         email = request.form['correo']
         input_password = request.form['password']
@@ -77,7 +77,7 @@ def login():
         else:
             global nombre_usuario
             nombre_usuario = api.get_name_user(email)
-            print(correo_usuario)
+            #print(correo_usuario)
             if password_redis == False: #Not found
                 error = 'Correo no encontrado'
                 return render_template('login.html', error=error)
@@ -92,7 +92,7 @@ def login():
                     app.logger.info('NO VALIDO')
                     return render_template('login.html', error=error)
     
-    #print(api.get_all_users())
+    print(api.get_all_users())
     return render_template('login.html')
 
 #Logout
@@ -109,7 +109,6 @@ def logout():
 @app.route('/perfil')
 def perfil():
     perfil_usuario = api.get_user(correo_usuario)
-    print(perfil_usuario)
     nombre = perfil_usuario['Nombre_completo']
     direccion = perfil_usuario['Direccion']
     email = perfil_usuario['email']
@@ -125,7 +124,6 @@ def dieta():
     #comidas = api.get_food()
     #print(comidas)
     comida_usuario = api.get_food_user(correo_usuario)
-    print(comida_usuario)
     nombre_comida = ""
     ingredientes = ""
     descripcion = ""
@@ -148,7 +146,6 @@ def dieta():
             tiene_comidas = True
     else:
         tiene_comidas = False
-    print(tiene_comidas)
 
     return render_template('dieta.html', tiene_comidas = tiene_comidas, nombre_comidas_array = nombre_comidas_array, ingredientes_array = ingredientes_array, descripcion_array = descripcion_array)
 
@@ -160,7 +157,7 @@ def clases():
     nombre_todos_instructores = []
     horarios_todas_clases = []
     aux_nombre_instructores = []
-    ll = [] 
+    aux_horarios = [] 
 
     for i in range(len(todas_clases)):
         nombre_todas_clases.append(todas_clases[i]['Nombre'])
@@ -173,18 +170,22 @@ def clases():
         for x in range(len(todas_clases[i]['Instructores'])):
             coach = api.get_one_instructor_id(todas_clases[i]['Instructores'][x])
             nombre_coach = coach['Nombre_completo']
-            print(nombre_coach)
+            nombre_coach = ' ' + nombre_coach + ' (' + str(x) + ') '
+            #print(nombre_coach)
             aux_nombre_instructores.append(nombre_coach.encode('utf-8'))
         #[x.encode('utf-8') for x in aux_nombre_instructores]
-        print(aux_nombre_instructores)
+        #print(aux_nombre_instructores)
         #aux_nombre_instructores = [r.encode('utf-8') for r in aux_nombre_instructores]
         nombre_todos_instructores.append(aux_nombre_instructores)
-        print(nombre_todos_instructores)
+        #print(nombre_todos_instructores)
         aux_nombre_instructores = []
-        horarios_todas_clases.append((todas_clases[i]['Horarios']))
+        for p in range(len(todas_clases[i]['Horarios'])):
+            hors = todas_clases[i]['Horarios'][p]
+            hors = ' ' + hors + ' (' + str(p) + ') '
+            aux_horarios.append(hors.encode('utf-8'))
+        horarios_todas_clases.append(aux_horarios)
+        aux_horarios= []
 
-    print("AHFIUAHIUFEUIFNEBIUBAIHFBAEFAEUFBAEYUBF")
-    print(nombre_todos_instructores)
 
     clases_usuario = api.get_classes_user(correo_usuario)
     id_horario = ""
@@ -230,7 +231,6 @@ def clases():
             tiene_clases = False
     else:
         tiene_clases = False
-        print("NO ENCONTRO USUARIO Y SUS CLASES DEBIDO A CORREO MALO")
 
     return render_template('clases.html', nombre_todas_clases = nombre_todas_clases, id_todas_clases = id_todas_clases, nombre_todos_instructores = nombre_todos_instructores, horarios_todas_clases = horarios_todas_clases, tiene_clases = tiene_clases, nombre_clases = nombre_clases, nombre_instructores = nombre_instructores, horario_clases = horario_clases, ubicacion_clases = ubicacion_clases)
 
@@ -321,7 +321,7 @@ def delete_users():
     form = deleteForm(request.form)
     if request.method == 'POST':
         email_user = form.correo.data
-        print(email_user)
+        #print(email_user)
         resultado_borrar = api.delete_user(email_user)
         if resultado_borrar == False:
             error = 'El correo que ingresaste no esta en la base de datos, vuelve a intentarlo'
@@ -441,11 +441,11 @@ class claseForm(Form):
         validators.DataRequired(),
         validators.Length(min=1, max=500)]
         )
-    instructores = StringField('Instructores:', [
-        validators.DataRequired(),
-        validators.Length(min=1, max=500)]
-        )
     horarios =  StringField('Horarios Clase:', [
+        validators.DataRequired(),
+        validators.Length(min=3, max=50)]
+        )
+    ubicacion =  StringField('Ubicacion Clase:', [
         validators.DataRequired(),
         validators.Length(min=3, max=50)]
         )
@@ -453,7 +453,7 @@ class claseForm(Form):
 #Crear una clase desde el instructor
 @app.route('/crear_clase', methods=['GET', 'POST'])
 def crear_clase():
-    print(api.get_classes())
+    #print(api.get_classes())
     form = claseForm(request.form)
     
     todas_clases = api.get_classes()
@@ -486,14 +486,14 @@ def crear_clase():
             
         horarios_todas_clases.append(todas_clases[i]['Horarios'])
 
-    print(nombre_todos_instructores)
+    #print(nombre_todos_instructores)
 
     if request.method == 'POST' and form.validate():
         nombre_clase = form.nombre_clase.data
         #CAMBIAR PARA QUE SE GENERE INCREMENTAL EL ID_CLASE
         id_clase = form.id_clase.data
-        instructores = form.instructores.data
         horarios = form.horarios.data
+        ubicacion = form.ubicacion.data
         instructor = api.get_one_instructor_email(correo_usuario)
         id_instructor = instructor['ID_Instructor']
         instructor_inscrito = False
@@ -501,7 +501,7 @@ def crear_clase():
         clase_ya_creada = api.get_one_class(id_clase)
         if clase_ya_creada is False:
             #Crear clase o aniadir el instructor a ella
-            clase = api.create_class(nombre_clase, id_clase, id_instructor, horarios)
+            clase = api.create_class(nombre_clase, id_clase, id_instructor, horarios, ubicacion)
             return redirect(url_for('home'))
         else:
             msg = "Ya esta creada la clase, por lo que haz ingresado en ella como instructor"
@@ -531,7 +531,7 @@ class claseUsuarioForm(Form):
         validators.DataRequired(),
         validators.Length(min=1, max=500)]
         )
-    correo_usuario =  StringField('Correo del usuario a inscribir:', [
+    correo_usuario_c =  StringField('Correo del usuario a inscribir:', [
         validators.DataRequired(),
         validators.Length(min=3, max=50)]
         )
@@ -539,7 +539,7 @@ class claseUsuarioForm(Form):
 #Aniade a un usuario a una clase el instructor
 @app.route('/add_user_to_class', methods=['GET', 'POST'])
 def add_user_to_class():
-    print(api.get_classes())
+    #print(api.get_classes())
     form = claseUsuarioForm(request.form)
     
     todas_clases = api.get_classes()
@@ -547,6 +547,8 @@ def add_user_to_class():
     id_todas_clases = []
     nombre_todos_instructores = []
     horarios_todas_clases = []
+    aux_nombre_instructores = []
+    aux_horarios = [] 
 
     for i in range(len(todas_clases)):
         nombre_todas_clases.append(todas_clases[i]['Nombre'])
@@ -556,22 +558,29 @@ def add_user_to_class():
             
             coach = api.get_one_instructor_id(todas_clases[i]['Instructores'][x])
             nombre_coach = coach['Nombre_completo']
-            nombre_todos_instructores.append(nombre_coach)
-            #HASTA AQUI
-            
-        horarios_todas_clases.append(todas_clases[i]['Horarios'])
+            nombre_coach = ' ' + nombre_coach + ' (' + str(x) + ') '
+            aux_nombre_instructores.append(nombre_coach.encode('utf-8'))
 
-    print(nombre_todos_instructores)
+        nombre_todos_instructores.append(aux_nombre_instructores)
+        aux_nombre_instructores = []
+
+        for p in range(len(todas_clases[i]['Horarios'])):
+            hors = todas_clases[i]['Horarios'][p]
+            hors = ' ' + hors + ' (' + str(p) + ') '
+            aux_horarios.append(hors.encode('utf-8'))
+        horarios_todas_clases.append(aux_horarios)
+        aux_horarios= []
 
     if request.method == 'POST' and form.validate():
         #CAMBIAR PARA QUE SE GENERE INCREMENTAL EL ID_CLASE
         id_clase = form.id_clase.data
         id_instructor = form.id_instructor.data
         id_horario = form.id_horario.data
-        correo_usuario = form.correo_usuario.data
+        correo_usuario_c = form.correo_usuario_c.data
         
 
-        existe_usuario = api.get_user(correo_usuario)
+        existe_usuario = api.get_user(correo_usuario_c)
+        print(existe_usuario)
         if existe_usuario is not None: #Si existe el usuario 
             existe_clase = api.get_one_class(id_clase)
             if existe_clase is False: #Si no existe la clase
@@ -579,12 +588,20 @@ def add_user_to_class():
                 return render_template('add_user_to_class.html', form = form, error = error)
             else: #si existe la clase
                 msg = "Agregado exitosamente"
-                if existe_usuario['Clases'][0] == -1: #Si es su primera clase
+                print(existe_usuario['Clases'][0]['Horario'])
+                if existe_usuario['Clases'][0]['Horario'] == -1: #Si es su primera clase
 
-                    modify_class_user = api.update_user_class(id_clase, id_instructor, id_horario, correo_usuario)
+                    modify_class_user = api.add_user_class(id_clase, id_instructor, id_horario, correo_usuario_c)
+                    print(modify_class_user)
+                    print("MODIFICADA")
+                    print(api.get_user(correo_usuario_c))
                     return render_template('add_user_to_class.html', form=form, msg = msg, nombre_todas_clases = nombre_todas_clases, horarios_todas_clases = horarios_todas_clases, nombre_todos_instructores = nombre_todos_instructores, id_todas_clases = id_todas_clases)
-                else:
-                    #add_class_user = api.update_user_class(id_clase, id_instructor, id_horario, correo_usuario)
+                else: #Si ya tiene clases, agrega la nueva
+                    print(correo_usuario_c)
+                    add_class_user = api.update_user_class(id_clase, id_instructor, id_horario, correo_usuario_c)
+                    print(add_class_user)
+                    print("AGREGADO")
+                    print(api.get_user(correo_usuario_c))
                     return render_template('add_user_to_class.html', form=form, msg = msg, nombre_todas_clases = nombre_todas_clases, horarios_todas_clases = horarios_todas_clases, nombre_todos_instructores = nombre_todos_instructores, id_todas_clases = id_todas_clases)
 
         else:

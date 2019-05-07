@@ -165,7 +165,7 @@ class Gimnasio(object):
         Agrega clases a un usuario
         '''
         #user = self.findOne(correo_usuario)
-        actualizado = self.collection.update_one({'email': correo_usuario}, {'$push' : {'Clases': new_class}}, upsert = True)
+        actualizado = self.collection.update_one({'email': correo_usuario, "Clases.Horario" : -1}, {'$set' : {'Clases.$': new_class}}, upsert = True)
         
         return actualizado
 
