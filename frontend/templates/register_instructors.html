@@ -1,1 +1,57 @@
-instructores
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Registrar Instructor</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+       <!-- <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    </head>
+    <style>
+        body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
+        .w3-bar,h1,button {font-family: "Montserrat", sans-serif}
+        .fa-anchor,.fa-coffee {font-size:200px}
+        </style>
+    <body>
+        <div class="w3-top">
+            <div class="w3-bar w3-black w3-card w3-left-align w3-large">
+                <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+                <a href="/home" class="w3-bar-item w3-button w3-padding-large w3-white">Home</a>
+            </div>
+            {% include '/includes/_messages.html' %}
+        </div>
+        
+        <div class="container">
+                <div class="w3-row-padding w3-padding-64 w3-container">
+                        <h1>Registrar Instructor:</h1> 
+                        {% from 'includes/_formhelpers.html' import render_field %}
+                        <form method="POST" action="">
+                            <div class="form-group">
+                                    {{render_field(form.nombre_instructor, class_="form-control")}}
+                            </div>
+                            <div class="form-group">
+                                    {{render_field(form.direccion_instructor, class_="form-control")}}
+                            </div>
+                            <div class="form-group">
+                                    {{render_field(form.email_instructor, class_="form-control")}}
+                            </div>
+                            <div class="form-group">
+                                {{render_field(form.password, class_="form-control")}}
+                            </div>
+                            <div class="form-group">
+                                {{render_field(form.confirmar_contrasenia, class_="form-control")}}
+                            </div>
+                                <p><input type="submit" class="btn btn-primary" value="Registrar"></p>
+                        </form>
+                    </div>
+        </div>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    </body>
+    {% include 'includes/_footer.html' %}
+</html>

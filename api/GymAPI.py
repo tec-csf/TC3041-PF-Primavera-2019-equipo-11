@@ -6,7 +6,6 @@ from bson import ObjectId
 import json
 import random
 
-cont = 1
 class GymAPI(object):
 
 #USUARIOS
@@ -29,6 +28,42 @@ class GymAPI(object):
             return "Nombre No encontrado"
         else:
             return user['Nombre_completo']
+
+    #Obtener el numero de usuarios que hay en la base de datos de mongodb
+    def get_number_of_users(self):
+        mongodb = Gimnasio.Gimnasio()
+        no_users = mongodb.getNumberOfUsers()
+        return no_users
+
+    def update_user(self):
+        mongodb = Gimnasio.Gimnasio()
+        p = {}
+        no_users = mongodb.updateUser('s',p)
+
+   #Actualizar los datos de sus clases del usuario 
+    def update_user_class(self, id_clase, id_instructor, id_horario, correo_usuario):
+        mongodb = Gimnasio.Gimnasio()
+        new_class = {
+            'Horario': int(id_horario), 
+		    'Instructor': int(id_instructor), 
+			'Id_clase': str(id_clase)
+        }
+        clases_usuario_actualizadas = mongodb.updateUserClass(new_class, correo_usuario)
+
+        return clases_usuario_actualizadas
+
+    #Aniade clases al usuario 
+    def add_user_class(self, id_clase, id_instructor, id_horario, correo_usuario):
+        mongodb = Gimnasio.Gimnasio()
+        new_class = {
+            'Horario': int(id_horario), 
+		    'Instructor': int(id_instructor), 
+			'Id_clase': str(id_clase)
+        }
+        clases_usuario_actualizadas = mongodb.addUserClass(new_class, correo_usuario)
+
+        return clases_usuario_actualizadas
+
 
 #CLASES
     #Obtener todas las clases
@@ -89,7 +124,7 @@ class GymAPI(object):
         result = mongodb.insertClassSchedule(id_clase, horarios)
         return result
 
-#SESIONES
+#SESIONES REDIS
     #Para comparar hashes y dejar o no pasar
     def get_password_user(self, email):
         redis = Accounts.Sessions()
@@ -105,10 +140,16 @@ class GymAPI(object):
         #MONGO TAMBIEN
 
     def create_user(self, nombre, direccion, correo, tarjeta, titular, csv, vencimiento):
-        id_generado = random.randint(100000, 999999)
-        id_usuario = 'U' + str(id_generado)
-        global cont 
-        cont = cont + 1
+        #id_generado = random.randint(100000, 999999)
+        #id_usuario = 'U' + str(id_generado)
+
+        print("Size of mongodb")
+        id_i = self.get_number_of_users() + 1
+        final_id = 'U' +  str(id_i).zfill(6)
+        print(final_id)
+        id_usuario = final_id
+        print("END")
+
         mongodb = Gimnasio.Gimnasio()
         user_data = {
             'Nombre_completo' : nombre,
@@ -215,13 +256,56 @@ class GymAPI(object):
         return result
 
     #Obtener un instructor en particular
-    def get_one_instructor(self, email):
+    def get_one_instructor_id(self, id):
         mongodb = Gimnasio.Gimnasio()
 
-        result = mongodb.findOneInstructor(email)
+        result = mongodb.findOneInstructorId(id)
         
         return result
 
+    #Obtener un instructor en particular
+    def get_one_instructor_email(self, email):
+        mongodb = Gimnasio.Gimnasio()
+
+        result = mongodb.findOneInstructorEmail(email)
+        
+        return result
+
+    #Crear un instructor
+    def create_instructor(self, nombre_instructor, direccion_instructor, email_instructor):
+        #id_generado = random.randint(100000, 999999)
+        #id_usuario = 'U' + str(id_generado)
+
+        print("Size of mongodb instructors")
+        id_i = self.get_number_of_instructors() + 1
+        final_id = 'I' +  str(id_i).zfill(6)
+        print(final_id)
+        id_instructor = final_id
+
+        mongodb = Gimnasio.Gimnasio()
+        instructor_data = {
+            'ID_Instructor' : id_instructor,
+            'Nombre_completo' : nombre_instructor,
+            'Direccion' : direccion_instructor,
+            'email': email_instructor, 
+            'Clases':[
+                {
+                    'Horario': '-1',
+                    'Id_clase': -1
+                }
+                ]
+        }
+        #user_json = json.loads(instructor_data)
+        print(instructor_data)
+
+        result = mongodb.createInstructor(instructor_data) 
+        return result#true or false
+
+    #Crear un instructor
+    def get_number_of_instructors(self):
+        mongodb = Gimnasio.Gimnasio()
+        no_instructors = mongodb.getNumberOfInstructors()
+        return no_instructors
 
 app = FlaskAPI(__name__)
 

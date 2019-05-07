@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    
     <style>
         body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
         .w3-bar,h1,button {font-family: "Montserrat", sans-serif}
@@ -16,35 +18,30 @@
     
     <body class="w3-light-grey" style="max-width:1600px">
         {% include 'includes/_navbar.html' %}
-        <!-- Overlay effect when opening sidebar on small screens -->
-        <div class="w3-overlay w3-hide-large w3-animate-opacity w3-top w3-container" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
-           <div class="w3-row-padding w3-padding-64 w3-container"> 
-               {% if tiene_clases %}
-                <h1 >Tus Clases:</h1>
-                    <div>
-                        {% for clase in nombre_clases %}
-                            <div class="w3-third w3-container w3-margin-bottom">
-                                <h3>{{nombre_clases[loop.index0]}}</h3>
-                                <div class="w3-container w3-white">
-                                    <p><b>{{nombre_instructores[loop.index0]}}</b></p>
-                                    <p>Horario: {{horario_clases[loop.index0]}}</p>
-                                    <p>Ubicación: {{ubicacion_clases[loop.index0]}}</p>
-                                </div>
-                            </div>
-                        {% endfor %}
-                        <!-- 
-                        <div class="w3-third w3-container w3-margin-bottom">
-                        <img src="/static/images/login.jpg" alt="Norway" style="width:100%" class="w3-hover-opacity">
-                        <div class="w3-container w3-white">
-                            <p><b>Lorem Ipsum</b></p>
-                            <p>Praesent tincidunt sed tellus ut rutrum. Sed vitae justo condimentum, porta lectus vitae, ultricies congue gravida diam non fringilla.</p>
+        <div>
+        {% include '/includes/_messages.html' %}
+        </div>
+            <div class="container">
+                <div class="w3-row-padding w3-padding-64 w3-container">
+                    <h1>Inscribir Usuario:</h1> 
+                    <p>Rellena el formulario presentado. Ingresa los ID´s correspondientes a la tabla mencionada más abajo.</p>
+                    {% from 'includes/_formhelpers.html' import render_field %}
+                    <form method="POST" action="">
+                        <div class="form-group">
+                            {{render_field(form.id_clase, class_="form-control")}}
                         </div>
+                        <div class="form-group">
+                                {{render_field(form.id_instructor, class_="form-control")}}
                         </div>
-                        -->
-                    </div>
-                {% else %}
-                    <h1 >Aún no estás inscrito a clases:</h1>
-                {% endif %}
+                        <div class="form-group">
+                                {{render_field(form.id_horario, class_="form-control")}}
+                        </div>
+                        <div class="form-group">
+                                {{render_field(form.correo_usuario, class_="form-control")}}
+                        </div>
+                            <p><input type="submit" class="btn btn-primary" value="Registrar"></p>
+                    </form>
+                </div>
             </div>
 
 

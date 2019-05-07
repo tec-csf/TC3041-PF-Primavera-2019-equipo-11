@@ -9,7 +9,7 @@ class Gimnasio(object):
         db = client.gimnasio
         self.collection = db.clientes
 
-
+#Usuarios
     def find(self):
         """
         Obtener todos los usuarios
@@ -61,12 +61,25 @@ class Gimnasio(object):
         """
         Actualizar un ususario
         """
-        result = self.collection.update_one({'email': email}, {"$set": new_data})
+        #result = self.collection.update_one({'email': email}, {"$set": new_data})
+        client = MongoClient(config.MONGO_URI)
+        db = client.gimnasio
+        collection = db.instructores
+        collection.update_one({
+            'ID_Instructor': 'I00001'
+        },{
+            '$set': {
+                'ID_Instructor': 'I000001'
+            }
+        }, upsert=False)
 
-        if result.matched_count == 1:
-            return True
-        else:  
-            return False
+    def getNumberOfUsers(self):
+        """
+        Actualizar un ususario
+        """
+        result = self.collection.count()
+
+        return result
 
 #CLASES
     def findClasses(self):
@@ -138,6 +151,23 @@ class Gimnasio(object):
 
         return result
 
+    def updateUserClass(self, new_class, correo_usuario):
+        '''
+        Modificar clases de un usuario
+        '''
+        #user = self.findOne(correo_usuario)
+        actualizado = self.collection.update_one({'email': correo_usuario}, {'$push' : {'Clases': new_class}}, upsert = True)
+        
+        return actualizado
+
+    def addUserClass(self, new_class, correo_usuario):
+        '''
+        Agrega clases a un usuario
+        '''
+        #user = self.findOne(correo_usuario)
+        actualizado = self.collection.update_one({'email': correo_usuario}, {'$push' : {'Clases': new_class}}, upsert = True)
+        
+        return actualizado
 
 #DIETAS
     def findFood(self):
@@ -195,6 +225,9 @@ class Gimnasio(object):
 
 #INSTRUCTORES
     def findInstructors(self):
+        '''
+        Obtener a todos los instructores
+        '''
         client = MongoClient(config.MONGO_URI)
         db = client.gimnasio
         collection = db.instructores
@@ -212,11 +245,56 @@ class Gimnasio(object):
         
         return instructores
 
-    def findOneInstructor(self, email):
+    def findOneInstructorId(self, id):
+        '''
+        Encontrar a un instructor dado su id
+        '''
         client = MongoClient(config.MONGO_URI)
         db = client.gimnasio
         collection = db.instructores
         
-        cursor = collection.find_one({'ID_Instructor': email})
+        cursor = collection.find_one({'ID_Instructor': id})
         
         return cursor
+    
+    def findOneInstructorEmail(self, correo):
+        '''
+        Encontrar a un instructor dado su correo
+        '''
+        client = MongoClient(config.MONGO_URI)
+        db = client.gimnasio
+        collection = db.instructores
+        
+        cursor = collection.find_one({'email': correo})
+        
+        return cursor
+
+    def createInstructor(self, instructor_data):
+        '''
+        Crear un instructor
+        '''
+
+        client = MongoClient(config.MONGO_URI)
+        db = client.gimnasio
+        collection = db.instructores
+
+        cursor = collection.insert_one(instructor_data)
+        
+        if cursor.inserted_id is not None:
+            return True
+        else:
+            return False
+
+
+    def getNumberOfInstructors(self):
+        '''
+        Obtener el numero de instructores que hay en la base de datos
+        '''
+
+        client = MongoClient(config.MONGO_URI)
+        db = client.gimnasio
+        collection = db.instructores
+
+        count = collection.count()
+
+        return count
