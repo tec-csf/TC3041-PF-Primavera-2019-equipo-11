@@ -30,6 +30,7 @@
         .fa-anchor,.fa-coffee {font-size:200px}
         </style>
     <body>
+      
         <div class="w3-top">
             <div class="w3-bar w3-black w3-card w3-left-align w3-large">
                 <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
@@ -71,6 +72,7 @@
                         <th>ID Clase</th>
                         <th>Nombre Clase</th>
                         <th>Horarios</th>
+                        <th>Instructores</th>
                       </tr>
                     </thead>
                     <tbody id="myTable">
@@ -79,6 +81,7 @@
                             <td>{{id_todas_clases[loop.index0]}}</td>
                             <td>{{nombre_todas_clases[loop.index0]}}</td>
                             <td>{{horarios_todas_clases[loop.index0]}}</td>
+                            <td>{{nombre_todos_instructores[loop.index0]}}</td>
                         </tr>
                       {% endfor %}
                     </tbody>

@@ -461,6 +461,8 @@ def crear_clase():
     id_todas_clases = []
     nombre_todos_instructores = []
     horarios_todas_clases = []
+    aux_nombre_instructores = []
+    aux_horarios = []
 
     for i in range(len(todas_clases)):
         nombre_todas_clases.append(todas_clases[i]['Nombre'])
@@ -474,17 +476,19 @@ def crear_clase():
             
             coach = api.get_one_instructor_id(todas_clases[i]['Instructores'][x])
             nombre_coach = coach['Nombre_completo']
-            nombre_todos_instructores.append(nombre_coach)
-            '''
+            nombre_coach = ' ' + nombre_coach + ' (' + str(x) + ') '
+            aux_nombre_instructores.append(nombre_coach.encode('utf-8'))
 
-            #BORRAR AL CAMBIAR EL ID DE LA CLASE EN EL INSTRUCTOR A 6 DIGITOS
-            coach = api.get_one_instructor('I000001')
-            nombre_coach = coach['Nombre_completo']
-            nombre_todos_instructores.append(nombre_coach)
-            '''
-            #HASTA AQUI
-            
-        horarios_todas_clases.append(todas_clases[i]['Horarios'])
+        nombre_todos_instructores.append(aux_nombre_instructores)
+        aux_nombre_instructores = []
+
+        for p in range(len(todas_clases[i]['Horarios'])):
+            hors = todas_clases[i]['Horarios'][p]
+            hors = ' ' + hors + ' (' + str(p) + ') '
+            aux_horarios.append(hors.encode('utf-8'))
+
+        horarios_todas_clases.append(aux_horarios)
+        aux_horarios= []
 
     #print(nombre_todos_instructores)
 
@@ -578,35 +582,39 @@ def add_user_to_class():
         id_horario = form.id_horario.data
         correo_usuario_c = form.correo_usuario_c.data
         
+        if id_clase in id_todas_clases: #Checar si exite la clase para crear la conexion
+            existe_usuario = api.get_user(correo_usuario_c)
+            if existe_usuario is not None: #Si existe el usuario 
+                existe_clase = api.get_one_class(id_clase)
+                if existe_clase is False: #Si no existe la clase
+                    error = 'La clase no existe'
+                    return render_template('add_user_to_class.html', form = form, error = error)
+                else: #si existe la clase
+                    msg = "Agregado exitosamente"
+                    print(existe_usuario['Clases'][0]['Horario'])
+                    if existe_usuario['Clases'][0]['Horario'] == -1: #Si es su primera clase
 
-        existe_usuario = api.get_user(correo_usuario_c)
-        print(existe_usuario)
-        if existe_usuario is not None: #Si existe el usuario 
-            existe_clase = api.get_one_class(id_clase)
-            if existe_clase is False: #Si no existe la clase
-                error = 'La clase no existe'
-                return render_template('add_user_to_class.html', form = form, error = error)
-            else: #si existe la clase
-                msg = "Agregado exitosamente"
-                print(existe_usuario['Clases'][0]['Horario'])
-                if existe_usuario['Clases'][0]['Horario'] == -1: #Si es su primera clase
+                        modify_class_user = api.add_user_class(id_clase, id_instructor, id_horario, correo_usuario_c)
+                        print(modify_class_user)
+                        print("MODIFICADA")
+                        print(api.get_user(correo_usuario_c))
+                        return render_template('add_user_to_class.html', form=form, msg = msg, nombre_todas_clases = nombre_todas_clases, horarios_todas_clases = horarios_todas_clases, nombre_todos_instructores = nombre_todos_instructores, id_todas_clases = id_todas_clases)
+                    else: #Si ya tiene clases, agrega la nueva
+                        print(correo_usuario_c)
+                        add_class_user = api.update_user_class(id_clase, id_instructor, id_horario, correo_usuario_c)
+                        print(add_class_user)
+                        print("AGREGADO")
+                        print(api.get_user(correo_usuario_c))
+                        return render_template('add_user_to_class.html', form=form, msg = msg, nombre_todas_clases = nombre_todas_clases, horarios_todas_clases = horarios_todas_clases, nombre_todos_instructores = nombre_todos_instructores, id_todas_clases = id_todas_clases)
 
-                    modify_class_user = api.add_user_class(id_clase, id_instructor, id_horario, correo_usuario_c)
-                    print(modify_class_user)
-                    print("MODIFICADA")
-                    print(api.get_user(correo_usuario_c))
-                    return render_template('add_user_to_class.html', form=form, msg = msg, nombre_todas_clases = nombre_todas_clases, horarios_todas_clases = horarios_todas_clases, nombre_todos_instructores = nombre_todos_instructores, id_todas_clases = id_todas_clases)
-                else: #Si ya tiene clases, agrega la nueva
-                    print(correo_usuario_c)
-                    add_class_user = api.update_user_class(id_clase, id_instructor, id_horario, correo_usuario_c)
-                    print(add_class_user)
-                    print("AGREGADO")
-                    print(api.get_user(correo_usuario_c))
-                    return render_template('add_user_to_class.html', form=form, msg = msg, nombre_todas_clases = nombre_todas_clases, horarios_todas_clases = horarios_todas_clases, nombre_todos_instructores = nombre_todos_instructores, id_todas_clases = id_todas_clases)
+            else:
+                error = 'No existe el usuario asociado al correo dado'
+                return render_template('add_user_to_class.html', form=form, error = error, nombre_todas_clases = nombre_todas_clases, horarios_todas_clases = horarios_todas_clases, nombre_todos_instructores = nombre_todos_instructores, id_todas_clases = id_todas_clases)
 
         else:
-            error = 'No existe el usuario asociado al correo dado'
-            return render_template('add_user_to_class.html', form = form, error = error)
+            error = 'No existe el id asociado a una clase, escribelo de manera correcta con forme a la lista'
+            return render_template('add_user_to_class.html', form=form, error = error, nombre_todas_clases = nombre_todas_clases, horarios_todas_clases = horarios_todas_clases, nombre_todos_instructores = nombre_todos_instructores, id_todas_clases = id_todas_clases)
+
 
     return render_template('add_user_to_class.html', form = form, nombre_todas_clases = nombre_todas_clases, horarios_todas_clases = horarios_todas_clases, nombre_todos_instructores = nombre_todos_instructores, id_todas_clases = id_todas_clases)
 
