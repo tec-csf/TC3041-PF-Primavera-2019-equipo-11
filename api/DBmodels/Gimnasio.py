@@ -165,9 +165,20 @@ class Gimnasio(object):
         Agrega clases a un usuario
         '''
         #user = self.findOne(correo_usuario)
-        andactualizado = self.collection.update_one({'email': correo_usuario, "Clases.Horario" : -1}, {'$set' : {'Clases.$': new_class}}, upsert = True)
+        actualizado = self.collection.update_one({'email': correo_usuario, "Clases.Horario" : -1}, {'$set' : {'Clases.$': new_class}}, upsert = True)
         
         return actualizado
+
+    def deleteClass(self, id_clase):
+        '''
+        Borrar una clase
+        '''
+        client = MongoClient(config.MONGO_URI)
+        db = client.gimnasio
+        collection = db.clases
+
+        result = collection.update({'_id':id_clase, "Cancelada":0}, {'$set': {'Cancelada': 1}})        
+        return result
 
 #DIETAS
     def findFood(self):

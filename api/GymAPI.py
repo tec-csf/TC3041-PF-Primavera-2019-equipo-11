@@ -109,7 +109,8 @@ class GymAPI(object):
                 [
                     horarios
                 ],
-            'Ubicacion': ubicacion
+            'Ubicacion': ubicacion,
+            'Cancelada':0
         }
         result = mongodb.createClass(class_data)
         return result
@@ -124,6 +125,12 @@ class GymAPI(object):
         mongodb = Gimnasio.Gimnasio()
         result = mongodb.insertClassSchedule(id_clase, horarios)
         return result
+
+    def delete_class(self, id_clase):
+        mongodb = Gimnasio.Gimnasio()
+        result = mongodb.deleteClass(id_clase)
+        return result
+
 
 #SESIONES REDIS
     #Para comparar hashes y dejar o no pasar
