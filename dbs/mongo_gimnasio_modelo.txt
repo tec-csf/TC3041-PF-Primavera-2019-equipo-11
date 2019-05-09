@@ -1,0 +1,50 @@
+//Cliente
+{
+    "_id":{"ObjectId"},
+    "Nombre_completo":"string",
+    "ID":"string",
+    "email":"string",
+    "Direccion":"string",
+    "Tarjeta":
+        {
+            "No_tarjeta":"string",
+            "Vencimiento":"date",
+            "CSV":"string",
+            "Titular":"string"
+        },
+    "Clases":[{
+                "Id_clase":"string",
+                "Instructor":"int",
+                "Horario":"int"
+              },...]
+}
+
+//Clase
+{
+    "_id":"string",
+    "Nombre":"string",
+    "Instructores":["string","string",...],
+    "Horarios":["string","string",...]
+    "Ubicacion":"string",
+    "Cancelada":"int"
+}
+
+//Instructor
+{
+    "_id":"object_id",
+    "Nombre_completo":"string",
+    "ID_Instructor":"string",
+    "email":"string",
+    "Direccion":"string"
+}
+
+//Dieta
+{
+    "_id":"object_id",
+    "Descripcion":"string",
+    "Ingredientes":"string",
+    "Id_comida":"int",
+    "Id_Cliente":"string",
+    "Nombre_comida":"string",
+    "Borrada":"int"
+}
