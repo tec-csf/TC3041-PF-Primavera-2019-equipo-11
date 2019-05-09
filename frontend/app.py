@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template, flash, redirect, url_for, session, request, logging  #render_template: para recargar la pagina
-from clases import Clases
+
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt
 from flask_wtf import FlaskForm
@@ -16,7 +16,6 @@ from api import GymAPI
 
 app = Flask(__name__)
 
-Clases = Clases()
 
 api = GymAPI.GymAPI()
 nombre_usuario = ""
@@ -46,15 +45,7 @@ def login():
         email = request.form['correo']
         input_password = request.form['password']
      
-        usuarios = api.get_all_users()
-        usuarios_array = []
-        
-        '''
-        for i in range(len(usuarios)-1):
-            usuarios_array.append(usuarios[i]['_id'])
-            usuarios_array.append(usuarios[i]['Nombre_completo'])
-            usuarios_array.append(usuarios[i]['email'])
-        '''
+        #usuarios = api.get_all_users()
         #print(usuarios)
 
         domain = email.rsplit('@', 1)[1]
@@ -161,15 +152,18 @@ def dieta():
 
         if comida_usuario is not None:
             for i in range(len(comida_usuario)):
-                nombre_comida = comida_usuario[i]['Nombre_comida']
-                ingredientes = comida_usuario[i]['Ingredientes']
-                descripcion = comida_usuario[i]['Descripcion']
+                if comida_usuario[i]['Borrada'] == 0:
+                    nombre_comida = comida_usuario[i]['Nombre_comida']
+                    ingredientes = comida_usuario[i]['Ingredientes']
+                    descripcion = comida_usuario[i]['Descripcion']
 
-                nombre_comidas_array.append(nombre_comida)
-                ingredientes_array.append(ingredientes)
-                descripcion_array.append(descripcion)
+                    nombre_comidas_array.append(nombre_comida)
+                    ingredientes_array.append(ingredientes)
+                    descripcion_array.append(descripcion)
 
-                tiene_comidas = True
+                    tiene_comidas = True
+            if not nombre_comida:
+                tiene_comidas = False
         else:
             tiene_comidas = False
 
@@ -177,6 +171,73 @@ def dieta():
     else:
         return redirect(url_for('login'))
     
+class deleteDietForm(Form):
+    correo_usuario = StringField('Correo del Usuario', [
+        validators.DataRequired(),
+        validators.Length(min=3, max=50)]
+        )
+    id_comida = StringField('ID de la Comida', [
+        validators.DataRequired(),
+        validators.Length(min=1, max=50)]
+        )
+
+#Apartado para borrar dietas a usuarios
+@app.route('/delete_diet', methods=['GET', 'POST'])
+def delete_diet():
+    if logged_in_instructor:
+        id_comidas = []
+        nombre_comidas = []
+        usuario_comidas = []
+        todas_comidas = api.get_food()
+        print(todas_comidas)
+        for i in range(len(todas_comidas)):
+            if todas_comidas[i]['Borrada'] == 0:
+                id_comidas.append(int(todas_comidas[i]['Id_comida']))
+                nombre_comidas.append(todas_comidas[i]['Nombre_comida'])
+                usuario_comidas.append(todas_comidas[i]['Id_Cliente'])
+        
+
+        form = deleteDietForm(request.form)
+        if request.method == 'POST' and form.validate():
+            correo_usuario = form.correo_usuario.data
+            id_comida = form.id_comida.data
+            print(id_comida)
+            if id_comida.isdigit():
+
+                if correo_usuario.find('@') != -1:
+                    existe_usuario = api.get_user(correo_usuario)
+                    if existe_usuario is not None:
+                        user_diet = api.get_food_id(int(id_comida))
+                        if user_diet:
+                            if user_diet[0]['Id_Cliente'] == correo_usuario:
+                                borrar_comida = api.delete_food(int(id_comida))
+                                if borrar_comida is not False:
+                                    return redirect(url_for('home'))
+                                else:
+                                    error = 'El ID de la comida no existe, intenta con un id correcto'
+                                    return render_template('delete_diet.html', form = form , error = error, id_comidas = id_comidas, nombre_comidas = nombre_comidas, usuario_comidas = usuario_comidas)
+                            else:
+                                error = 'No existe la comida para el usuario especificado'
+                                return render_template('delete_diet.html', form = form , error = error, id_comidas = id_comidas, nombre_comidas = nombre_comidas, usuario_comidas = usuario_comidas)
+                        else:
+                            error = 'No existe la comida'
+                            return render_template('delete_diet.html', form = form , error = error, id_comidas = id_comidas, nombre_comidas = nombre_comidas, usuario_comidas = usuario_comidas)
+                
+                    else: 
+                        error = 'No existe el correo asociado a una cuenta'
+                        return render_template('delete_diet.html', form = form , error = error, id_comidas = id_comidas, nombre_comidas = nombre_comidas, usuario_comidas = usuario_comidas)
+                else:
+                    error = 'No es un correo valido'
+                    return render_template('delete_diet.html', form = form , error = error, id_comidas = id_comidas, nombre_comidas = nombre_comidas, usuario_comidas = usuario_comidas)
+            else:
+                error = 'Ingresa un ID que sea un numero'
+                return render_template('delete_diet.html', form = form , error = error, id_comidas = id_comidas, nombre_comidas = nombre_comidas, usuario_comidas = usuario_comidas)
+        return render_template('delete_diet.html', form = form, id_comidas = id_comidas, nombre_comidas = nombre_comidas, usuario_comidas = usuario_comidas)
+
+    else:
+        return redirect(url_for('login'))
+    
+
 
 @app.route('/clases')
 def clases():
@@ -190,8 +251,8 @@ def clases():
         aux_horarios = [] 
 
         for i in range(len(todas_clases)):
-            print('Debug')
-            print(todas_clases[i]['Cancelada'])
+            #print('Debug')
+            #print(todas_clases[i]['Cancelada'])
             if int(todas_clases[i]['Cancelada']) == 0:
                 nombre_todas_clases.append(todas_clases[i]['Nombre'])
                 id_todas_clases.append(todas_clases[i]['_id'])
@@ -238,11 +299,10 @@ def clases():
         ubicacion_clases = []
         
         if clases_usuario is not None:
-
             if clases_usuario[0]['Horario'] != -1:
                 for i in range(len(clases_usuario)):
-                    print(clases_usuario[i])
-                    
+                    #print(clases_usuario[i])
+                    #PUEDO BORRAR ESTO
                     id_horario = str(clases_usuario[i]['Horario'])
                     id_instructor = clases_usuario[i]['Instructor']
                     id_clase = clases_usuario[i]['Id_clase']
@@ -440,7 +500,7 @@ def delete_class():
             if clase_info is not False: #Existe la clase ha borrar
                 if clase_info['Cancelada'] == 0:
                     resultado_borrar = api.delete_class(id_clase)
-                    print(resultado_borrar)
+                    #print(resultado_borrar)
                     return redirect(url_for('home'))
                 else:
                     error = 'Clase ya cancelada, inserta un id de las clases que aparecen en la lista'
@@ -491,12 +551,8 @@ def register_instructors():
             email_instructor = form.email_instructor.data
 
             password = sha256_crypt.encrypt(str(form.password.data))
-
-            #signup_mongo = api.create_instructor(nombre_instructor, direccion_instructor, email_instructor)
-            
             if email_instructor.find('@') != -1:
                 domain = email_instructor.rsplit('@', 1)[1]
-
                 #GUARDAR EN LA BASE DE DATOS LOS DATOS INGRESADOS
                 if domain == 'mambafit.com': #para que sea un instructor autentico por el dominio
                     signup_redis = api.create_session(email_instructor, password)
@@ -552,11 +608,12 @@ def crear_dieta():
 
             if correo_cliente.find('@') != -1:
                 domain = correo_cliente.rsplit('@', 1)[1]
-
                 if domain != "mambafit.com": #para el administrador
                     signup_redis = api.get_password_user(correo_cliente)
                     if signup_redis:
-                        dieta = api.crear_dieta(nombre_comida, ingredientes, descripcion, correo_cliente)
+                        dietas_todas = api.get_food()
+                        id_dieta_nueva = len(dietas_todas) + 1
+                        dieta = api.crear_dieta(id_dieta_nueva, nombre_comida, ingredientes, descripcion, correo_cliente)
                         return redirect(url_for('home'))
                     else:
                         error = "No existe correo que ingresaste"
@@ -611,11 +668,6 @@ def crear_clase():
             if int(todas_clases[i]['Cancelada']) == 0:
                 nombre_todas_clases.append(todas_clases[i]['Nombre'])
                 id_todas_clases.append(todas_clases[i]['_id'])
-                '''for x in range(len(todas_clases[i]['Instructores'])):
-                    nombre_todos_instructores.append(todas_clases[i]['Instructores'][x])
-                for p in range(len(todas_clases[i]['Horarios'])):
-                    horarios_todas_clases.append(todas_clases[i]['Horarios'][p])'''
-                #nombre_todos_instructores.append(todas_clases[i]['Instructores'])
                 for x in range(len(todas_clases[i]['Instructores'])):
                     
                     coach = api.get_one_instructor_id(todas_clases[i]['Instructores'][x])
@@ -716,11 +768,6 @@ def add_user_to_class():
             if int(todas_clases[i]['Cancelada']) == 0:
                 nombre_todas_clases.append(todas_clases[i]['Nombre'])
                 id_todas_clases.append(todas_clases[i]['_id'])
-                '''for x in range(len(todas_clases[i]['Instructores'])):
-                    nombre_todos_instructores.append(todas_clases[i]['Instructores'][x])
-                for p in range(len(todas_clases[i]['Horarios'])):
-                    horarios_todas_clases.append(todas_clases[i]['Horarios'][p])'''
-                #nombre_todos_instructores.append(todas_clases[i]['Instructores'])
                 for x in range(len(todas_clases[i]['Instructores'])):
                     coach = api.get_one_instructor_id(todas_clases[i]['Instructores'][x])
                     nombre_coach = coach['Nombre_completo']
@@ -728,9 +775,6 @@ def add_user_to_class():
                     nombre_coach = ' ' + nombre_coach + ' ( ID: ' + str(x) + ' ) '
                     #print(nombre_coach)
                     aux_nombre_instructores.append(nombre_coach)
-                #[x.encode('utf-8') for x in aux_nombre_instructores]
-                #print(aux_nombre_instructores)
-                #aux_nombre_instructores = [r.encode('utf-8') for r in aux_nombre_instructores]
                 aux_nombre_instructores = ', '.join(map(str, aux_nombre_instructores))
                 nombre_todos_instructores.append(aux_nombre_instructores)
                 #print(nombre_todos_instructores)
@@ -757,7 +801,7 @@ def add_user_to_class():
 
                 #checando si hay el instructor y el horario en la clase
                 checar_clase = api.get_one_class(id_clase)
-                if checar_clase is not False: #Si existe la contrasenia
+                if checar_clase is not False: #Si existe la clase
                     if len(checar_clase['Instructores']) > int(id_instructor):
                         existe_instructor = True
                     if len(checar_clase['Horarios']) > int(id_horario):
@@ -767,7 +811,7 @@ def add_user_to_class():
                         existe_usuario = api.get_user(correo_usuario_c)
                         if existe_usuario is not None: #Si existe el usuario 
                             msg = "Agregado exitosamente"
-                            print(existe_usuario['Clases'][0]['Horario'])
+                            #print(existe_usuario['Clases'][0]['Horario'])
                             if existe_usuario['Clases'][0]['Horario'] == -1: #Si es su primera clase
 
                                 modify_class_user = api.add_user_class(id_clase, id_instructor, id_horario, correo_usuario_c)

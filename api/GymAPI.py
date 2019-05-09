@@ -237,20 +237,34 @@ class GymAPI(object):
         
         return result
 
+    #Obtener comida de un usuario
+    def get_food_id(self, id):
+        mongodb = Gimnasio.Gimnasio()
+
+        result = mongodb.findFoodID(id)
+        
+        return result
+
     #Crear una comida para un usuario en especifico
-    def crear_dieta(self, nombre_comida, ingredientes, descripcion, correo_cliente):
+    def crear_dieta(self, id_dieta_nueva, nombre_comida, ingredientes, descripcion, correo_cliente):
         mongodb = Gimnasio.Gimnasio()
 
         dieta = {
-            'Id_comida' : 0,
+            'Id_comida' : id_dieta_nueva,
             'Nombre_comida' : nombre_comida,
             'Id_Cliente': correo_cliente, 
             'Ingredientes' : ingredientes,
             'Descripcion': descripcion,
+            'Borrada': 0
         }
 
         result = mongodb.createFood(dieta)
         
+        return result
+    def delete_food(self, id_comida):
+        mongodb = Gimnasio.Gimnasio()
+
+        result = mongodb.deleteFood(id_comida)
         return result
 
 

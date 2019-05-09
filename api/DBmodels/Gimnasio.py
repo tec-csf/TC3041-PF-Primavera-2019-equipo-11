@@ -209,9 +209,22 @@ class Gimnasio(object):
         #cursor = collection.replace_one({'Id_Cliente': 'U000001'}, {'Id_comida': 0, 'Nombre_comida': 'Pollo ahumado', 'Id_Cliente': 'act@gmail.com', 'Ingredientes': '100 gr pollo, 100 gr de brocoli, 100 gr papa', 'Descripcion': 'Preparala sin aceite y cocinala lentamente al fuego, el brocoli cocinalo al vapor, y la papa al horno'})
 
         cursor = collection.find({'Id_Cliente': email})
-    
         dietas = []
         
+        for dieta in cursor:
+            # Se adiciono para poder manejar ObjectID
+            dieta['_id'] = str(dieta['_id']) 
+            dietas.append(dieta)
+        
+        return dietas
+
+    def findFoodID(self, id):
+        client = MongoClient(config.MONGO_URI)
+        db = client.gimnasio
+        collection = db.dietas
+
+        cursor = collection.find({'Id_comida': id})
+        dietas = []
         for dieta in cursor:
             # Se adiciono para poder manejar ObjectID
             dieta['_id'] = str(dieta['_id']) 
@@ -232,7 +245,22 @@ class Gimnasio(object):
             return True
         else:
             return False
+    
+    def deleteFood(self, id_comida):
+        client = MongoClient(config.MONGO_URI)
+        db = client.gimnasio
+        collection = db.dietas
 
+        #cursor = collection.delete_one({'Id_comida': id_comida})
+
+        cursor = collection.update_one({'Id_comida': id_comida}, {'$set' : {'Borrada':1}}, upsert = True)
+
+        print(cursor.matched_count)
+
+        if cursor.matched_count == 1:
+            return True
+        else:  
+            return False
 
 #INSTRUCTORES
     def findInstructors(self):

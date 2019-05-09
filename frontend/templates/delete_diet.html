@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Borrar Usuario</title>
+  <title>Borrar Dieta</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
@@ -21,24 +21,24 @@
     {% include '/includes/_messages.html' %}
     <div class="w3-row-padding w3-padding-64 w3-container"> 
       <div class="container">
-        <h2>Usuarios:</h2>
-        <p>Busca un usuario, escribe el correo en el campo que se especifíca y posteriormente da click en el botón 'Eliminar' para borrar el usuario de la base de datos:</p>  
+        <h2>Dietas:</h2>
+        <p>Busca una dieta, escribe el correo del usuario y el id de la dieta en el campo que se especifíca y posteriormente da click en el botón 'Eliminar Comida' para borrar la dieta del usuario de la base de datos:</p>  
         <input class="form-control" id="myInput" type="text" placeholder="Search..">
         <br>
         <table class="table table-bordered ">
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Correo</th>
-              <th>Dirección</th>
+              <th>ID Comida</th>
+              <th>Comida</th>
+              <th>Correo usuario</th>
             </tr>
           </thead>
           <tbody id="myTable">
-            {% for usuario in correos_usuarios %}
+            {% for dieta in id_comidas %}
               <tr>
-                  <td>{{nombres_usuarios[loop.index0]}}</td>
-                  <td>{{correos_usuarios[loop.index0]}}</td>
-                  <td>{{direcciones_usuarios[loop.index0]}}</td>
+                  <td>{{id_comidas[loop.index0]}}</td>
+                  <td>{{nombre_comidas[loop.index0]}}</td>
+                  <td>{{usuario_comidas[loop.index0]}}</td>
               </tr>
             {% endfor %}
           </tbody>
@@ -46,9 +46,12 @@
         {% from 'includes/_formhelpers.html' import render_field %}
         <form method="POST" action="">
           <div class="form-group">
-              {{render_field(form.correo, class_="form-control")}}
+              {{render_field(form.id_comida, class_="form-control")}}
           </div>
-          <p><input type="submit" class="btn btn-primary" value="Eliminar"></p>
+          <div class="form-group">
+                {{render_field(form.correo_usuario, class_="form-control")}}
+            </div>
+          <p><input type="submit" class="btn btn-primary" value="Eliminar Comida"></p>
         </form>
         <!--<button type="submit" class="btn btn-primary" id="button" onclick="deleteSelectedRow()">Eliminar</button>-->
         
@@ -65,12 +68,6 @@
       });
     });
 
-    $('#myTable tr').on('click', function(){
-      email = $(this).children().first().next().html();
-      $('#myTable tr').removeClass('highlight'); // "Unselect" all the rows
-      $(this).addClass("highlight")
-      //document.getElementById("demo").innerHTML = email;
-    });
   });
   function deleteSelectedRow() {
     if (email != "Not selected")
