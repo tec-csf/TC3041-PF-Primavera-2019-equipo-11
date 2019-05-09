@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.abspath(".."))
 from api import GymAPI
 
 app = Flask(__name__)
-
+app.secret_key='12345'
 
 api = GymAPI.GymAPI()
 nombre_usuario = ""
@@ -848,5 +848,5 @@ def add_user_to_class():
 
 
 if __name__ == "__main__":
-    app.secret_key='12345'
+    
     app.run(debug=True)
